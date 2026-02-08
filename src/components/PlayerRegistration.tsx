@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Star, X, Shuffle, Users } from 'lucide-react';
+import { Plus, Star, X, Shuffle, Users, Trash2 } from 'lucide-react';
 import { Player, GameFormat, RoundType, FORMAT_LABELS, TEAM_SIZES } from '@/lib/types';
 
 interface Props {
@@ -18,12 +18,13 @@ interface Props {
   onDraw: () => void;
   onAddFromHall: (name: string) => void;
   onRemoveFromHall: (name: string) => void;
+  onClearHall: () => void;
 }
 
 export function PlayerRegistration({
   players, format, roundType, playerHall, canDraw, validationMessage, phase,
   onAddPlayer, onRemovePlayer, onToggleCaptain, onSetFormat, onSetRoundType,
-  onDraw, onAddFromHall, onRemoveFromHall,
+  onDraw, onAddFromHall, onRemoveFromHall, onClearHall,
 }: Props) {
   const [name, setName] = useState('');
 
@@ -58,7 +59,6 @@ export function PlayerRegistration({
   }
 
   const formats: GameFormat[] = ['duplas', 'trios', 'quartetos'];
-  const hallAvailable = playerHall.filter(n => !players.some(p => p.name.toLowerCase() === n.toLowerCase()));
 
   return (
     <section className="section-card animate-fade-in">
@@ -88,19 +88,44 @@ export function PlayerRegistration({
       </div>
 
       {/* Hall */}
-      {hallAvailable.length > 0 && (
+      {playerHall.length > 0 && (
         <div className="mb-5">
-          <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">Jogadores Frequentes</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Jogadores Frequentes ({playerHall.length})</p>
+            <button
+              onClick={() => { if (confirm('Apagar todos os jogadores frequentes?')) onClearHall(); }}
+              className="text-xs text-destructive hover:text-destructive/80 flex items-center gap-1 transition-colors"
+            >
+              <Trash2 className="h-3 w-3" />
+              Limpar todos
+            </button>
+          </div>
           <div className="flex flex-wrap gap-1.5">
-            {hallAvailable.map(n => (
-              <button
-                key={n}
-                onClick={() => onAddFromHall(n)}
-                className="text-xs bg-secondary hover:bg-primary/20 text-secondary-foreground hover:text-primary px-2.5 py-1 rounded-md transition-colors border border-transparent hover:border-primary/30"
-              >
-                + {n}
-              </button>
-            ))}
+            {playerHall.map(n => {
+              const isInList = players.some(p => p.name.toLowerCase() === n.toLowerCase());
+              return (
+                <div key={n} className="flex items-center gap-0.5">
+                  {!isInList ? (
+                    <button
+                      onClick={() => onAddFromHall(n)}
+                      className="text-xs bg-secondary hover:bg-primary/20 text-secondary-foreground hover:text-primary px-2.5 py-1 rounded-l-md transition-colors border border-transparent hover:border-primary/30"
+                    >
+                      + {n}
+                    </button>
+                  ) : (
+                    <span className="text-xs bg-primary/15 text-primary px-2.5 py-1 rounded-l-md border border-primary/20">
+                      ✓ {n}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => { if (confirm(`Remover "${n}" dos frequentes?`)) onRemoveFromHall(n); }}
+                    className="text-xs bg-secondary hover:bg-destructive/20 text-muted-foreground hover:text-destructive px-1.5 py-1 rounded-r-md transition-colors border-l border-border"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

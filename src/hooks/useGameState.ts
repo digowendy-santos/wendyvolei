@@ -7,7 +7,7 @@ import {
 import { generateSchedule } from '@/lib/scheduleGenerator';
 import {
   loadAllDays, saveDay, deleteDayData,
-  loadPlayerHall, addToPlayerHall, removeFromPlayerHall,
+  loadPlayerHall, addToPlayerHall, removeFromPlayerHall, clearPlayerHall,
 } from '@/lib/storage';
 
 function computeStandings(teams: Team[], matches: Match[]): Standing[] {
@@ -145,6 +145,11 @@ export function useGameState() {
     setPlayerHall(updated);
   }, []);
 
+  const clearHall = useCallback(() => {
+    clearPlayerHall();
+    setPlayerHall([]);
+  }, []);
+
   const drawTeams = useCallback(() => {
     const teamSize = TEAM_SIZES[format];
     if (players.length < 6 || players.length % teamSize !== 0) return;
@@ -246,7 +251,7 @@ export function useGameState() {
     playerHall, annualRanking, savedDays,
     canDraw, validationMessage,
     addPlayer, removePlayer, toggleCaptain,
-    addPlayerFromHall, removeFromHall,
+    addPlayerFromHall, removeFromHall, clearHall,
     drawTeams, updateMatchScore, finishMatch, resetDay,
   };
 }
