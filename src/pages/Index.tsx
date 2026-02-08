@@ -19,7 +19,7 @@ const Index = () => {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(/images/beach-bg.jpg)',
-          opacity: 0.08,
+          opacity: 0.3,
         }}
       />
       <div className="fixed inset-0 z-0 bg-background/80" />

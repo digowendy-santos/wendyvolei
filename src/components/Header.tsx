@@ -16,8 +16,7 @@ export function Header({
         <div className="flex items-center gap-3">
           <span className="text-3xl">🏐</span>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Wendy Beach Volley<span className="text-primary">Beach Volley</span>
-            </h1>
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Rodrigo <span className="text-primary">Beach Volley</span></h1>
           </div>
         </div>
         <div className="flex items-center gap-3">

@@ -106,7 +106,7 @@ function generatePDF(text: string, title: string) {
 
 function shareWhatsApp(text: string) {
   const encoded = encodeURIComponent(text);
-  window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  window.location.href = `https://wa.me/?text=${encoded}`;
 }
 
 export function ShareExport(props: Props) {
