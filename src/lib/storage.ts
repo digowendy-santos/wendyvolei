@@ -52,3 +52,7 @@ export function removeFromPlayerHall(name: string): string[] {
   savePlayerHall(hall);
   return hall;
 }
+
+export function clearPlayerHall(): void {
+  savePlayerHall([]);
+}
