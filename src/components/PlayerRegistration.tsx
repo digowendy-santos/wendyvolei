@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Plus, Star, X, Shuffle, Users, Trash2 } from 'lucide-react';
+import { Plus, Star, X, Shuffle, Users, Trash2, Hand } from 'lucide-react';
+import { ManualTeamBuilder } from './ManualTeamBuilder';
 import { Player, GameFormat, RoundType, FORMAT_LABELS, TEAM_SIZES } from '@/lib/types';
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
   onSetFormat: (f: GameFormat) => void;
   onSetRoundType: (r: RoundType) => void;
   onDraw: () => void;
+  onFormManually: (assignments: Player[][]) => void;
   onAddFromHall: (name: string) => void;
   onRemoveFromHall: (name: string) => void;
   onClearHall: () => void;
@@ -24,9 +26,10 @@ interface Props {
 export function PlayerRegistration({
   players, format, roundType, playerHall, canDraw, validationMessage, phase,
   onAddPlayer, onRemovePlayer, onToggleCaptain, onSetFormat, onSetRoundType,
-  onDraw, onAddFromHall, onRemoveFromHall, onClearHall,
+  onDraw, onFormManually, onAddFromHall, onRemoveFromHall, onClearHall,
 }: Props) {
   const [name, setName] = useState('');
+  const [showManual, setShowManual] = useState(false);
 
   const handleAdd = () => {
     if (name.trim()) {
@@ -207,15 +210,40 @@ export function PlayerRegistration({
         <p className="text-sm text-accent mb-4">{validationMessage}</p>
       )}
 
-      {/* Draw button */}
-      <button
-        onClick={onDraw}
-        disabled={!canDraw}
-        className="w-full gradient-primary text-primary-foreground py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-      >
-        <Shuffle className="h-5 w-5" />
-        SORTEAR TIMES
-      </button>
+      {/* Manual builder */}
+      {showManual && canDraw ? (
+        <ManualTeamBuilder
+          players={players}
+          format={format}
+          onConfirm={(assignments) => {
+            onFormManually(assignments);
+            setShowManual(false);
+          }}
+          onCancel={() => setShowManual(false)}
+        />
+      ) : (
+        <>
+          {/* Draw button */}
+          <button
+            onClick={onDraw}
+            disabled={!canDraw}
+            className="w-full gradient-primary text-primary-foreground py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Shuffle className="h-5 w-5" />
+            SORTEAR TIMES
+          </button>
+
+          {/* Manual button */}
+          <button
+            onClick={() => setShowManual(true)}
+            disabled={!canDraw}
+            className="w-full mt-2 bg-secondary border border-border text-foreground py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-secondary/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Hand className="h-5 w-5" />
+            FORMAR TIMES MANUALMENTE
+          </button>
+        </>
+      )}
     </section>
   );
 }

@@ -1,10 +1,11 @@
-import { Standing } from '@/lib/types';
+import { Standing, Team } from '@/lib/types';
 
 interface Props {
   standings: Standing[];
+  teams: Team[];
 }
 
-export function StandingsTable({ standings }: Props) {
+export function StandingsTable({ standings, teams }: Props) {
   return (
     <section className="section-card animate-fade-in">
       <div className="section-title">
@@ -27,27 +28,39 @@ export function StandingsTable({ standings }: Props) {
             </tr>
           </thead>
           <tbody>
-            {standings.map((s, i) => (
-              <tr
-                key={s.teamId}
-                className={`border-b border-border/50 transition-colors ${i === 0 && s.wins > 0 ? 'bg-primary/5' : 'hover:bg-secondary/30'}`}
-              >
-                <td className="py-2.5 px-2 font-bold text-muted-foreground">{i + 1}</td>
-                <td className="py-2.5 px-2 font-semibold text-foreground">
-                  {i === 0 && s.wins > 0 && <span className="text-trophy mr-1">👑</span>}
-                  {s.teamName}
-                </td>
-                <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.played}</td>
-                <td className="text-center py-2.5 px-2 font-semibold text-success">{s.wins}</td>
-                <td className="text-center py-2.5 px-2 text-destructive">{s.losses}</td>
-                <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.pointsFor}</td>
-                <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.pointsAgainst}</td>
-                <td className="text-center py-2.5 px-2 font-semibold" style={{ color: s.pointsDiff >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
-                  {s.pointsDiff > 0 ? '+' : ''}{s.pointsDiff}
-                </td>
-                <td className="text-center py-2.5 px-2 font-bold text-primary">{s.winPercentage}%</td>
-              </tr>
-            ))}
+            {standings.map((s, i) => {
+              const team = teams.find(t => t.id === s.teamId);
+              return (
+                <tr
+                  key={s.teamId}
+                  className={`border-b border-border/50 transition-colors ${i === 0 && s.wins > 0 ? 'bg-primary/5' : 'hover:bg-secondary/30'}`}
+                >
+                  <td className="py-2.5 px-2 font-bold text-muted-foreground">{i + 1}</td>
+                  <td className="py-2.5 px-2">
+                    <div>
+                      <span className="font-semibold text-foreground">
+                        {i === 0 && s.wins > 0 && <span className="text-trophy mr-1">👑</span>}
+                        {s.teamName}
+                      </span>
+                      {team && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {team.players.map(p => p.name).join(', ')}
+                        </p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.played}</td>
+                  <td className="text-center py-2.5 px-2 font-semibold text-success">{s.wins}</td>
+                  <td className="text-center py-2.5 px-2 text-destructive">{s.losses}</td>
+                  <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.pointsFor}</td>
+                  <td className="text-center py-2.5 px-2 text-secondary-foreground">{s.pointsAgainst}</td>
+                  <td className="text-center py-2.5 px-2 font-semibold" style={{ color: s.pointsDiff >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+                    {s.pointsDiff > 0 ? '+' : ''}{s.pointsDiff}
+                  </td>
+                  <td className="text-center py-2.5 px-2 font-bold text-primary">{s.winPercentage}%</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
