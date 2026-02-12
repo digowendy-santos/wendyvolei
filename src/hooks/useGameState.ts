@@ -248,10 +248,17 @@ export function useGameState() {
 
   const annualRanking = useMemo((): AnnualRankingEntry[] => {
     const currentYear = new Date().getFullYear();
-    const allDays = loadAllDays().filter(d => {
+    const savedDaysFromStorage = loadAllDays().filter(d => d.date !== currentDate);
+
+    // Build a combined list including the current in-memory day
+    const currentDayData: GameDay | null =
+      teams.length > 0 ? { date: currentDate, players, format, roundType, teams, matches } : null;
+
+    const allDays = [...savedDaysFromStorage, ...(currentDayData ? [currentDayData] : [])].filter(d => {
       if (!d.date.startsWith(String(currentYear))) return false;
       return d.matches.length > 0 && d.matches.every(m => m.isFinished);
     });
+
     const pp: Record<string, { points: number; days: number }> = {};
     for (const day of allDays) {
       const ds = computeStandings(day.teams, day.matches);
@@ -269,7 +276,7 @@ export function useGameState() {
     return Object.entries(pp)
       .map(([name, d]) => ({ playerName: name, totalPoints: d.points, daysPlayed: d.days }))
       .sort((a, b) => b.totalPoints - a.totalPoints);
-  }, [matches, teams]);
+  }, [matches, teams, currentDate, players, format, roundType]);
 
   const savedDays = useMemo(() => loadAllDays(), [matches, teams]);
 
