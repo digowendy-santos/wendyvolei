@@ -214,6 +214,21 @@ export function useGameState() {
     deleteDayData(currentDate);
   }, [currentDate]);
 
+  const generateRetorno = useCallback(() => {
+    if (roundType === 'turno-returno' || teams.length < 2) return;
+    const returnPairings = matches.map(m => ({
+      id: matches.length + matches.indexOf(m) + 1,
+      team1Id: m.team2Id,
+      team2Id: m.team1Id,
+      score1: null,
+      score2: null,
+      timerSeconds: 0,
+      isFinished: false,
+    }));
+    setMatches(prev => [...prev, ...returnPairings]);
+    setRoundType('turno-returno');
+  }, [matches, roundType, teams.length]);
+
   const teamSize = TEAM_SIZES[format];
   const canDraw = players.length >= 6 && players.length % teamSize === 0;
 
@@ -261,6 +276,6 @@ export function useGameState() {
     canDraw, validationMessage,
     addPlayer, removePlayer, toggleCaptain,
     addPlayerFromHall, removeFromHall, clearHall,
-    drawTeams, formTeamsManually, updateMatchScore, finishMatch, resetDay,
+    drawTeams, formTeamsManually, updateMatchScore, finishMatch, resetDay, generateRetorno,
   };
 }

@@ -63,9 +63,13 @@ const Index = () => {
                 onScoreUpdate={game.updateMatchScore}
                 onFinish={game.finishMatch}
               />
-              {game.phase === 'finished' && game.winner && (
-                <WinnerBanner winner={game.winner} />
-              )}
+               {game.phase === 'finished' && game.winner && (
+                 <WinnerBanner 
+                   winner={game.winner}
+                   roundType={game.roundType}
+                   onGenerateRetorno={game.generateRetorno}
+                 />
+               )}
             </>
           )}
 

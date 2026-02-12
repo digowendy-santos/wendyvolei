@@ -1,13 +1,16 @@
 import { Team } from '@/lib/types';
 import { Trophy } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface Props {
   winner: Team;
+  roundType: string;
+  onGenerateRetorno?: () => void;
 }
 
-export function WinnerBanner({ winner }: Props) {
+export function WinnerBanner({ winner, roundType, onGenerateRetorno }: Props) {
   return (
-    <section className="animate-fade-in">
+    <section className="animate-fade-in space-y-4">
       <div className="gradient-trophy rounded-2xl p-8 text-center animate-winner-glow">
         <Trophy className="h-12 w-12 mx-auto mb-3 text-primary-foreground" />
         <h2 className="text-3xl font-extrabold text-primary-foreground mb-2">
@@ -25,6 +28,14 @@ export function WinnerBanner({ winner }: Props) {
           ))}
         </div>
       </div>
+      {roundType === 'turno' && onGenerateRetorno && (
+        <Button
+          onClick={onGenerateRetorno}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg"
+        >
+          🔄 Gerar Returno
+        </Button>
+      )}
     </section>
   );
 }
