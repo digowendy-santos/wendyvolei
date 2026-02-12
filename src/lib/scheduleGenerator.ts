@@ -1,62 +1,46 @@
 import { Team, Match, GameFormat, RoundType } from './types';
 
+/**
+ * Generate round-robin rounds using the circle method.
+ * Each round contains matches where every team plays exactly once (even count)
+ * or all but one team plays (odd count with bye).
+ * Flattening rounds in order guarantees no team waits more than 1 match.
+ */
 function generateRounds(numTeams: number): [number, number][][] {
   const isOdd = numTeams % 2 !== 0;
   const totalTeams = isOdd ? numTeams + 1 : numTeams;
   const rounds: [number, number][][] = [];
-  const teams = Array.from({ length: totalTeams }, (_, i) => i);
+
+  // Build initial array: indices 0..totalTeams-1
+  // We'll fix index 0 and rotate the rest (standard circle method)
+  const circle: number[] = [];
+  for (let i = 1; i < totalTeams; i++) circle.push(i);
 
   for (let round = 0; round < totalTeams - 1; round++) {
     const roundMatches: [number, number][] = [];
-    for (let i = 0; i < totalTeams / 2; i++) {
-      const t1 = teams[i];
-      const t2 = teams[totalTeams - 1 - i];
+
+    // First match always involves team 0
+    const opp = circle[0];
+    if (0 < numTeams && opp < numTeams) {
+      roundMatches.push([0, opp]);
+    }
+
+    // Remaining matches pair from outside-in
+    for (let i = 1; i < totalTeams / 2; i++) {
+      const t1 = circle[i];
+      const t2 = circle[circle.length - i];
       if (t1 < numTeams && t2 < numTeams) {
         roundMatches.push([t1, t2]);
       }
     }
+
     rounds.push(roundMatches);
-    // Rotate: fix teams[0], rotate the rest
-    const last = teams.pop()!;
-    teams.splice(1, 0, last);
+
+    // Rotate circle array: last element goes to front
+    circle.unshift(circle.pop()!);
   }
+
   return rounds;
-}
-
-function optimizeMatchOrder(
-  allMatches: [number, number][],
-  numTeams: number
-): [number, number][] {
-  const result: [number, number][] = [];
-  const remaining = allMatches.map((m, i) => ({ match: m, idx: i }));
-  const lastPlayed = new Map<number, number>();
-
-  for (let i = 0; i < numTeams; i++) {
-    lastPlayed.set(i, -10);
-  }
-
-  for (let step = 0; remaining.length > 0; step++) {
-    let bestIdx = 0;
-    let bestPriority = -Infinity;
-
-    for (let i = 0; i < remaining.length; i++) {
-      const [t1, t2] = remaining[i].match;
-      const wait1 = step - (lastPlayed.get(t1) ?? -10);
-      const wait2 = step - (lastPlayed.get(t2) ?? -10);
-      const priority = Math.max(wait1, wait2) * 100 + Math.min(wait1, wait2);
-      if (priority > bestPriority) {
-        bestPriority = priority;
-        bestIdx = i;
-      }
-    }
-
-    const picked = remaining.splice(bestIdx, 1)[0];
-    result.push(picked.match);
-    lastPlayed.set(picked.match[0], step);
-    lastPlayed.set(picked.match[1], step);
-  }
-
-  return result;
 }
 
 export function generateSchedule(
@@ -68,18 +52,19 @@ export function generateSchedule(
   if (n < 2) return [];
 
   const rounds = generateRounds(n);
+
+  // Turno: flatten rounds in natural order (max 1 game wait)
   let allPairings: [number, number][] = rounds.flat();
 
   if (roundType === 'turno-returno') {
-    const returnPairings = allPairings.map(
-      ([a, b]) => [b, a] as [number, number]
-    );
+    // Returno: same round structure but swap home/away
+    const returnPairings: [number, number][] = rounds
+      .flat()
+      .map(([a, b]) => [b, a] as [number, number]);
     allPairings = [...allPairings, ...returnPairings];
   }
 
-  const optimized = optimizeMatchOrder(allPairings, n);
-
-  return optimized.map((pair, index) => ({
+  return allPairings.map((pair, index) => ({
     id: index + 1,
     team1Id: teams[pair[0]].id,
     team2Id: teams[pair[1]].id,
