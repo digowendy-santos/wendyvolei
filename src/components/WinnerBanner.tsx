@@ -6,9 +6,10 @@ interface Props {
   winner: Team;
   roundType: string;
   onGenerateRetorno?: () => void;
+  onFinalize?: () => void;
 }
 
-export function WinnerBanner({ winner, roundType, onGenerateRetorno }: Props) {
+export function WinnerBanner({ winner, roundType, onGenerateRetorno, onFinalize }: Props) {
   return (
     <section className="animate-fade-in space-y-4">
       <div className="gradient-trophy rounded-2xl p-8 text-center animate-winner-glow">
@@ -29,12 +30,21 @@ export function WinnerBanner({ winner, roundType, onGenerateRetorno }: Props) {
         </div>
       </div>
       {roundType === 'turno' && onGenerateRetorno && (
-        <Button
-          onClick={onGenerateRetorno}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg"
-        >
-          🔄 Gerar Returno
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button
+            onClick={onGenerateRetorno}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6 text-lg"
+          >
+            🔄 Gerar Returno
+          </Button>
+          <Button
+            onClick={onFinalize}
+            variant="outline"
+            className="w-full font-semibold py-6 text-lg"
+          >
+            ✅ Finalizar o Dia
+          </Button>
+        </div>
       )}
     </section>
   );

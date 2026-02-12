@@ -31,16 +31,30 @@ export function AnnualRanking({ ranking }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {ranking.map((r, i) => (
+                {ranking.map((r, i) => {
+                  // Determine medal: only assign next medal when points drop
+                  let medalIndex = 0;
+                  for (let j = 0; j < i; j++) {
+                    if (ranking[j].totalPoints > ranking[j + 1 > i ? i : j + 1].totalPoints) {
+                      medalIndex++;
+                    }
+                  }
+                  // Simpler: count distinct higher point values
+                  const distinctHigher = new Set(ranking.slice(0, i).map(x => x.totalPoints).filter(p => p > r.totalPoints)).size;
+                  const rank = distinctHigher;
+                  const label = rank < 3 ? medals[rank] : i + 1;
+
+                  return (
                   <tr key={r.playerName} className="border-b border-border/50 hover:bg-secondary/30">
                     <td className="py-2.5 px-2 font-bold text-muted-foreground">
-                      {i < 3 ? medals[i] : i + 1}
+                      {label}
                     </td>
                     <td className="py-2.5 px-2 font-semibold text-foreground">{r.playerName}</td>
                     <td className="text-center py-2.5 px-2 font-bold text-primary">{r.totalPoints}</td>
                     <td className="text-center py-2.5 px-2 text-secondary-foreground">{r.daysPlayed}</td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
