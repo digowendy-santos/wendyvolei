@@ -65,11 +65,12 @@ const Index = () => {
               />
                {game.phase === 'finished' && game.winner && (
                  <WinnerBanner 
-                   winner={game.winner}
-                   roundType={game.roundType}
-                   onGenerateRetorno={game.generateRetorno}
-                 />
-               )}
+                    winner={game.winner}
+                    roundType={game.roundType}
+                    onGenerateRetorno={game.generateRetorno}
+                    onFinalize={game.finalizeDay}
+                  />
+                )}
             </>
           )}
 

@@ -229,6 +229,11 @@ export function useGameState() {
     setRoundType('turno-returno');
   }, [matches, roundType, teams.length]);
 
+  const finalizeDay = useCallback(() => {
+    // Mark the round as turno-returno so the "Gerar Returno" button disappears
+    setRoundType('turno-returno');
+  }, []);
+
   const teamSize = TEAM_SIZES[format];
   const canDraw = players.length >= 6 && players.length % teamSize === 0;
 
@@ -276,6 +281,6 @@ export function useGameState() {
     canDraw, validationMessage,
     addPlayer, removePlayer, toggleCaptain,
     addPlayerFromHall, removeFromHall, clearHall,
-    drawTeams, formTeamsManually, updateMatchScore, finishMatch, resetDay, generateRetorno,
+    drawTeams, formTeamsManually, updateMatchScore, finishMatch, resetDay, generateRetorno, finalizeDay,
   };
 }
