@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Star, X, Shuffle, Users, Trash2, Hand } from 'lucide-react';
+import { Plus, Star, X, Shuffle, Users, Trash2, Hand, ClipboardPaste } from 'lucide-react';
 import { ManualTeamBuilder } from './ManualTeamBuilder';
 import { Player, GameFormat, RoundType, FORMAT_LABELS, TEAM_SIZES } from '@/lib/types';
 
@@ -30,6 +30,8 @@ export function PlayerRegistration({
 }: Props) {
   const [name, setName] = useState('');
   const [showManual, setShowManual] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
+  const [bulkText, setBulkText] = useState('');
 
   const handleAdd = () => {
     if (name.trim()) {
@@ -89,6 +91,50 @@ export function PlayerRegistration({
           Adicionar
         </button>
       </div>
+
+      {/* Bulk paste */}
+      {!showBulk ? (
+        <button
+          onClick={() => setShowBulk(true)}
+          className="mb-4 text-sm text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
+        >
+          <ClipboardPaste className="h-4 w-4" />
+          Colar lista de jogadores
+        </button>
+      ) : (
+        <div className="mb-4 space-y-2">
+          <textarea
+            value={bulkText}
+            onChange={(e) => setBulkText(e.target.value)}
+            placeholder={"Cole a lista aqui (um nome por linha):\nJoão\nMaria\nPedro"}
+            rows={5}
+            className="w-full bg-secondary border border-border rounded-lg px-4 py-2.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                const names = bulkText
+                  .split(/[\n,;]+/)
+                  .map(n => n.replace(/^\d+[\.\)\-\s]*/, '').trim())
+                  .filter(n => n.length > 0 && n.length <= 30);
+                names.forEach(n => onAddPlayer(n));
+                setBulkText('');
+                setShowBulk(false);
+              }}
+              disabled={!bulkText.trim()}
+              className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+            >
+              Adicionar todos
+            </button>
+            <button
+              onClick={() => { setBulkText(''); setShowBulk(false); }}
+              className="bg-secondary border border-border text-foreground px-4 py-2 rounded-lg text-sm hover:bg-secondary/80 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hall */}
       {playerHall.length > 0 && (
