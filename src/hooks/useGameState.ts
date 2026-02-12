@@ -156,11 +156,9 @@ export function useGameState() {
     const numTeams = players.length / teamSize;
     const captains = shuffle(players.filter(p => p.isCaptain));
     const nonCaptains = shuffle(players.filter(p => !p.isCaptain));
-    const label = FORMAT_LABELS[format];
-
     const newTeams: Team[] = Array.from({ length: numTeams }, (_, i) => ({
       id: crypto.randomUUID(),
-      name: `${label} ${i + 1}`,
+      name: `Time ${i + 1}`,
       players: [],
     }));
 
@@ -182,6 +180,17 @@ export function useGameState() {
     setTeams(newTeams);
     setMatches(newMatches);
   }, [players, format, roundType]);
+
+  const formTeamsManually = useCallback((assignments: Player[][]) => {
+    const newTeams: Team[] = assignments.map((teamPlayers, i) => ({
+      id: crypto.randomUUID(),
+      name: `Time ${i + 1}`,
+      players: teamPlayers,
+    }));
+    const newMatches = generateSchedule(newTeams, format, roundType);
+    setTeams(newTeams);
+    setMatches(newMatches);
+  }, [format, roundType]);
 
   const updateMatchScore = useCallback((matchId: number, score1: number | null, score2: number | null) => {
     setMatches(prev => prev.map(m =>
@@ -252,6 +261,6 @@ export function useGameState() {
     canDraw, validationMessage,
     addPlayer, removePlayer, toggleCaptain,
     addPlayerFromHall, removeFromHall, clearHall,
-    drawTeams, updateMatchScore, finishMatch, resetDay,
+    drawTeams, formTeamsManually, updateMatchScore, finishMatch, resetDay,
   };
 }

@@ -47,6 +47,7 @@ const Index = () => {
             onSetFormat={game.setFormat}
             onSetRoundType={game.setRoundType}
             onDraw={game.drawTeams}
+            onFormManually={game.formTeamsManually}
             onAddFromHall={game.addPlayerFromHall}
             onRemoveFromHall={game.removeFromHall}
             onClearHall={game.clearHall}
@@ -55,7 +56,7 @@ const Index = () => {
           {game.teams.length > 0 && (
             <>
               <TeamsDisplay teams={game.teams} />
-              <StandingsTable standings={game.standings} />
+              <StandingsTable standings={game.standings} teams={game.teams} />
               <MatchSchedule
                 matches={game.matches}
                 teams={game.teams}
