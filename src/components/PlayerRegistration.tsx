@@ -115,7 +115,7 @@ export function PlayerRegistration({
               onClick={() => {
                 const names = bulkText
                   .split(/[\n,;]+/)
-                  .map(n => n.replace(/^\d+[\.\)\-\s]*/, '').trim())
+                  .map(n => n.replace(/^[\s]*\d+[\s]*[.\-)\]:°ºª]*[\s\-–—.]*/i, '').trim())
                   .filter(n => n.length > 0 && n.length <= 30);
                 names.forEach(n => onAddPlayer(n));
                 setBulkText('');
